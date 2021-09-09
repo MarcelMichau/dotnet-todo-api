@@ -6,29 +6,29 @@ namespace TodoAPI.Controllers;
 [ApiController]
 public class TodosController : ControllerBase
 {
-    private readonly TodoRepository _repository;
+    private readonly IServiceProvider _serviceProvider;
 
-    public TodosController(TodoRepository repository)
+    public TodosController(IServiceProvider serviceProvider)
     {
-        _repository = repository;
+        _serviceProvider = serviceProvider;
     }
 
     [HttpGet("{id}", Name = nameof(GetTodo))]
     public async Task<IActionResult> GetTodo(int id)
     {
-        return new GetTodo(_repository).Handle(id) is Todo todo ? Ok(todo) : NotFound();
+        return _serviceProvider.GetRequiredService<GetTodo>().Handle(id) is Todo todo ? Ok(todo) : NotFound();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetTodos()
     {
-        return Ok(new GetTodos(_repository).Handle());
+        return Ok(_serviceProvider.GetRequiredService<GetTodos>().Handle());
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateTodo(Todo todo)
     {
-        var newTodo = new CreateTodo(_repository).Handle(todo);
+        var newTodo = _serviceProvider.GetRequiredService<CreateTodo>().Handle(todo);
 
         return CreatedAtRoute(nameof(GetTodo), new { id = newTodo.Id }, newTodo);
     }
@@ -36,14 +36,14 @@ public class TodosController : ControllerBase
     [HttpPost("{id}")]
     public async Task<IActionResult> EditTodo(int id, Todo todo)
     {
-        new EditTodo(_repository).Handle(id, todo);
+        _serviceProvider.GetRequiredService<EditTodo>().Handle(id, todo);
         return Ok();
     }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteTodo(int id)
     {
-        new DeleteTodo(_repository).Handle(id);
+        _serviceProvider.GetRequiredService<DeleteTodo>().Handle(id);
         return Ok();
     }
 }
