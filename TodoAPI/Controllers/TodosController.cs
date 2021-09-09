@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TodoAPI.Todos;
 
 namespace TodoAPI.Controllers;
 [Route("api/[controller]")]
@@ -15,19 +16,19 @@ public class TodosController : ControllerBase
     [HttpGet("{id}", Name = nameof(GetTodo))]
     public async Task<IActionResult> GetTodo(int id)
     {
-        return _repository.GetTodo(id) is Todo todo ? Ok(todo) : NotFound();
+        return new GetTodo(_repository).Handle(id) is Todo todo ? Ok(todo) : NotFound();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetTodos()
     {
-        return Ok(_repository.GetTodos());
+        return Ok(new GetTodos(_repository).Handle());
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateTodo(Todo todo)
     {
-        var newTodo = _repository.AddTodo(todo);
+        var newTodo = new CreateTodo(_repository).Handle(todo);
 
         return CreatedAtRoute(nameof(GetTodo), new { id = newTodo.Id }, newTodo);
     }
@@ -35,14 +36,14 @@ public class TodosController : ControllerBase
     [HttpPost("{id}")]
     public async Task<IActionResult> EditTodo(int id, Todo todo)
     {
-        _repository.EditTodo(id, todo);
+        new EditTodo(_repository).Handle(id, todo);
         return Ok();
     }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteTodo(int id)
     {
-        _repository.DeleteTodo(id);
+        new DeleteTodo(_repository).Handle(id);
         return Ok();
     }
 }

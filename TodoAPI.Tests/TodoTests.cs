@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using TodoAPI.Controllers;
+using TodoAPI.Todos;
 using Xunit;
 
 namespace TodoAPI.Tests;
@@ -10,16 +11,14 @@ public class TodoTests
     public async Task ShouldBeAbleToCreateTodo()
     {
         var repository = new TodoRepository();
-        var controller = new TodosController(repository);
+        var handler = new CreateTodo(repository);
 
         var todo = new Todo
         {
             Text = "Write a Test"
         };
 
-        var response = await controller.CreateTodo(todo);
-        var result = response as CreatedAtRouteResult;
-        var newTodo = result.Value as Todo;
+        var newTodo = handler.Handle(todo);
 
         newTodo.Text.Should().BeEquivalentTo(todo.Text);
     }
@@ -28,13 +27,12 @@ public class TodoTests
     public async Task ShouldBeAbleToGetTodo()
     {
         var repository = new TodoRepository();
-        var controller = new TodosController(repository);
+        var createHandler = new CreateTodo(repository);
 
-        var id = await CreateDummyTodo(controller);
+        var id = CreateDummyTodo(createHandler);
 
-        var response = await controller.GetTodo(id);
-        var result = response as OkObjectResult;
-        var todo = result.Value as Todo;
+        var getHandler = new GetTodo(repository);
+        var todo = getHandler.Handle(id);
 
         todo.Text.Should().Be("Write another Test");
         todo.IsCompleted.Should().BeFalse();
@@ -44,14 +42,13 @@ public class TodoTests
     public async Task ShouldBeAbleToGetAllTodos()
     {
         var repository = new TodoRepository();
-        var controller = new TodosController(repository);
+        var createHandler = new CreateTodo(repository);
 
-        await CreateDummyTodo(controller);
-        await CreateDummyTodo(controller);
+        CreateDummyTodo(createHandler);
+        CreateDummyTodo(createHandler);
 
-        var response = await controller.GetTodos();
-        var result = response as OkObjectResult;
-        var todos = result.Value as List<Todo>;
+        var getAllHandler = new GetTodos(repository);
+        var todos = getAllHandler.Handle();
 
         todos.Count.Should().Be(2);
     }
@@ -60,20 +57,21 @@ public class TodoTests
     public async Task ShouldBeAbleToEditTodo()
     {
         var repository = new TodoRepository();
-        var controller = new TodosController(repository);
+        var createHandler = new CreateTodo(repository);
 
-        var id = await CreateDummyTodo(controller);
+        var id = CreateDummyTodo(createHandler);
 
         var completedTodo = new Todo
         {
             IsCompleted = true
         };
 
-        await controller.EditTodo(id, completedTodo);
+        var editHandler = new EditTodo(repository);
+        editHandler.Handle(id, completedTodo);
 
-        var response = await controller.GetTodo(id);
-        var result = response as OkObjectResult;
-        var editedTodo = result.Value as Todo;
+        var getHandler = new GetTodo(repository);
+
+        var editedTodo = getHandler.Handle(id);
 
         editedTodo.IsCompleted.Should().BeTrue();
     }
@@ -82,30 +80,27 @@ public class TodoTests
     public async Task ShouldBeAbleToDeleteTodo()
     {
         var repository = new TodoRepository();
-        var controller = new TodosController(repository);
+        var createHandler = new CreateTodo(repository);
 
-        var id = await CreateDummyTodo(controller);
+        var id = CreateDummyTodo(createHandler);
 
-        await controller.DeleteTodo(id);
+        var deleteHandler = new DeleteTodo(repository);
+        deleteHandler.Handle(id);
 
-        var response = await controller.GetTodos();
-        var result = response as OkObjectResult;
-        var todos = result.Value as List<Todo>;
+        var getAllHandler = new GetTodos(repository);
+        var todos = getAllHandler.Handle();
 
         todos.Count.Should().Be(0);
     }
 
-    private async Task<int> CreateDummyTodo(TodosController controller)
+    private static int CreateDummyTodo(CreateTodo handler)
     {
         var todo = new Todo
         {
             Text = "Write another Test"
         };
 
-        var response = await controller.CreateTodo(todo);
-
-        var result = response as CreatedAtRouteResult;
-        var newTodo = result.Value as Todo;
+        var newTodo = handler.Handle(todo);
 
         return newTodo.Id;
     }
