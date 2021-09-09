@@ -1,10 +1,9 @@
-﻿
-namespace TodoAPI.Todos;
-public class CreateTodo
+﻿namespace TodoAPI.Todos.Commands;
+public class CreateTodoCommand
 {
     private readonly TodoRepository _repository;
 
-    public CreateTodo(TodoRepository repository)
+    public CreateTodoCommand(TodoRepository repository)
     {
         _repository = repository;
     }

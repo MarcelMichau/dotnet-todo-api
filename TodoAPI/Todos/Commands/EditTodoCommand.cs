@@ -1,10 +1,10 @@
 ﻿
-namespace TodoAPI.Todos;
-public class EditTodo
+namespace TodoAPI.Todos.Commands;
+public class EditTodoCommand
 {
     private readonly TodoRepository _repository;
 
-    public EditTodo(TodoRepository repository)
+    public EditTodoCommand(TodoRepository repository)
     {
         _repository = repository;
     }

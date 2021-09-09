@@ -1,16 +1,16 @@
 ﻿using FluentAssertions;
-using TodoAPI.Todos;
+using TodoAPI.Todos.Commands;
 using Xunit;
 
 namespace TodoAPI.Tests
 {
-    public class CreateTodoTests
+    public class CreateTodoCommandTests
     {
         [Fact]
         public async Task ShouldBeAbleToCreateTodo()
         {
             var repository = new TodoRepository();
-            var handler = new CreateTodo(repository);
+            var handler = new CreateTodoCommand(repository);
 
             var todo = new Todo
             {

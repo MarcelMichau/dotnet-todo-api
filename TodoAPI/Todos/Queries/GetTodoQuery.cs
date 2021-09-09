@@ -1,10 +1,10 @@
 ﻿
-namespace TodoAPI.Todos;
-public class GetTodo
+namespace TodoAPI.Todos.Queries;
+public class GetTodoQuery
 {
     private readonly TodoRepository _repository;
 
-    public GetTodo(TodoRepository repository)
+    public GetTodoQuery(TodoRepository repository)
     {
         _repository = repository;
     }

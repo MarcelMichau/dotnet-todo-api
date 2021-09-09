@@ -1,9 +1,9 @@
-using TodoAPI.Todos;
+using TodoAPI.Todos.Commands;
 
 namespace TodoAPI.Tests;
 public static class TodoUtilities
 {
-    public static int CreateDummyTodo(CreateTodo handler)
+    public static int CreateDummyTodo(CreateTodoCommand handler)
     {
         var todo = new Todo
         {

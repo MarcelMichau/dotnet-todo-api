@@ -1,16 +1,17 @@
 ﻿using FluentAssertions;
-using TodoAPI.Todos;
+using TodoAPI.Todos.Commands;
+using TodoAPI.Todos.Queries;
 using Xunit;
 
 namespace TodoAPI.Tests
 {
-    public class EditTodoTests
+    public class EditTodoCommandTests
     {
         [Fact]
         public async Task ShouldBeAbleToEditTodo()
         {
             var repository = new TodoRepository();
-            var createHandler = new CreateTodo(repository);
+            var createHandler = new CreateTodoCommand(repository);
 
             var id = TodoUtilities.CreateDummyTodo(createHandler);
 
@@ -19,10 +20,10 @@ namespace TodoAPI.Tests
                 IsCompleted = true
             };
 
-            var editHandler = new EditTodo(repository);
+            var editHandler = new EditTodoCommand(repository);
             editHandler.Handle(id, completedTodo);
 
-            var getHandler = new GetTodo(repository);
+            var getHandler = new GetTodoQuery(repository);
 
             var editedTodo = getHandler.Handle(id);
 

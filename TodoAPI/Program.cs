@@ -1,5 +1,6 @@
 using TodoAPI;
-using TodoAPI.Todos;
+using TodoAPI.Todos.Commands;
+using TodoAPI.Todos.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +14,11 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddSingleton<TodoRepository>();
 
-builder.Services.AddScoped<CreateTodo>();
-builder.Services.AddScoped<DeleteTodo>();
-builder.Services.AddScoped<EditTodo>();
-builder.Services.AddScoped<GetTodo>();
-builder.Services.AddScoped<GetTodos>();
+builder.Services.AddScoped<CreateTodoCommand>();
+builder.Services.AddScoped<DeleteTodoCommand>();
+builder.Services.AddScoped<EditTodoCommand>();
+builder.Services.AddScoped<GetTodoQuery>();
+builder.Services.AddScoped<GetTodosQuery>();
 
 var app = builder.Build();
 
