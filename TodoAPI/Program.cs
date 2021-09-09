@@ -1,11 +1,13 @@
 using MediatR;
 using TodoAPI;
+using TodoAPI.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddMediatR(typeof(Todo));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
