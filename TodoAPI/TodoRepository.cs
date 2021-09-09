@@ -34,6 +34,7 @@ public class TodoRepository
         var savedTodo = _todos.First(x => x.Id == id);
 
         savedTodo.IsCompleted = todo.IsCompleted;
+        savedTodo.Text = todo.Text;
     }
 
     public void DeleteTodo(int id)

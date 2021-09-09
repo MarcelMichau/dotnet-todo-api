@@ -28,17 +28,17 @@ public class TodosController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTodo(Todo todo)
+    public async Task<IActionResult> CreateTodo(CreateTodoCommand command)
     {
-        var newTodo = await _mediator.Send(new CreateTodoCommand(todo));
+        var newTodo = await _mediator.Send(command);
 
         return CreatedAtRoute(nameof(GetTodo), new { id = newTodo.Id }, newTodo);
     }
 
-    [HttpPost("{id}")]
-    public async Task<IActionResult> EditTodo(int id, Todo todo)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> EditTodo(int id, EditTodoCommand command)
     {
-        await _mediator.Send(new EditTodoCommand(id, todo));
+        await _mediator.Send(command);
         return Ok();
     }
 

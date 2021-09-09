@@ -3,11 +3,11 @@
 namespace TodoAPI.Todos.Commands;
 public class CreateTodoCommand : IRequest<Todo>
 {
-    public Todo Todo { get; }
+    public string TodoText { get; init; }
 
-    public CreateTodoCommand(Todo todo)
+    public CreateTodoCommand(string todoText)
     {
-        Todo = todo;
+        TodoText = todoText;
     }
 
     public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Todo>
@@ -21,7 +21,12 @@ public class CreateTodoCommand : IRequest<Todo>
 
         public Task<Todo> Handle(CreateTodoCommand request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_repository.AddTodo(request.Todo));
+            var newTodo = new Todo
+            {
+                Text = request.TodoText
+            };
+
+            return Task.FromResult(_repository.AddTodo(newTodo));
         }
     }
 }

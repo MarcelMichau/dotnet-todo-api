@@ -12,14 +12,11 @@ namespace TodoAPI.Tests
             var repository = new TodoRepository();
             var handler = new CreateTodoCommandHandler(repository);
 
-            var todo = new Todo
-            {
-                Text = "Write a Test"
-            };
+            var todoText = "Write a Test";
 
-            var newTodo = await handler.Handle(new Todos.Commands.CreateTodoCommand(todo), CancellationToken.None);
+            var newTodo = await handler.Handle(new Todos.Commands.CreateTodoCommand(todoText), CancellationToken.None);
 
-            newTodo.Text.Should().BeEquivalentTo(todo.Text);
+            newTodo.Text.Should().BeEquivalentTo(todoText);
         }
     }
 }

@@ -3,10 +3,10 @@
 namespace TodoAPI.Todos.Commands;
 public class EditTodoCommand : IRequest
 {
-    public int Id { get; }
-    public Todo Todo {  get; }
+    public int Id { get; init; }
+    public EditableTodo Todo { get; init; }
 
-    public EditTodoCommand(int id, Todo todo)
+    public EditTodoCommand(int id, EditableTodo todo)
     {
         Id = id;
         Todo = todo;
@@ -23,8 +23,20 @@ public class EditTodoCommand : IRequest
 
         public Task<Unit> Handle(EditTodoCommand request, CancellationToken cancellationToken)
         {
-            _repository.EditTodo(request.Id, request.Todo);
+            var todo = new Todo
+            {
+                Text = request.Todo.Text,
+                IsCompleted = request.Todo.IsCompleted
+            };
+
+            _repository.EditTodo(request.Id, todo);
             return Unit.Task;
         }
+    }
+
+    public class EditableTodo
+    {
+        public string Text { get; init; }
+        public bool IsCompleted { get; init; }
     }
 }
