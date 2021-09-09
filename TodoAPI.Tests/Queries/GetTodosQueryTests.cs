@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
-using TodoAPI.Todos.Commands;
 using TodoAPI.Todos.Queries;
 using Xunit;
+using static TodoAPI.Todos.Commands.CreateTodoCommand;
+using static TodoAPI.Todos.Queries.GetTodosQuery;
 
 namespace TodoAPI.Tests
 {
@@ -11,13 +12,13 @@ namespace TodoAPI.Tests
         public async Task ShouldBeAbleToGetAllTodos()
         {
             var repository = new TodoRepository();
-            var createHandler = new CreateTodoCommand(repository);
+            var createHandler = new CreateTodoCommandHandler(repository);
 
-            TodoUtilities.CreateDummyTodo(createHandler);
-            TodoUtilities.CreateDummyTodo(createHandler);
+            await TodoUtilities.CreateDummyTodo(createHandler);
+            await TodoUtilities.CreateDummyTodo(createHandler);
 
-            var getAllHandler = new GetTodosQuery(repository);
-            var todos = getAllHandler.Handle();
+            var getAllHandler = new GetTodosQueryHandler(repository);
+            var todos = await getAllHandler.Handle(new GetTodosQuery(), CancellationToken.None);
 
             todos.Count.Should().Be(2);
         }

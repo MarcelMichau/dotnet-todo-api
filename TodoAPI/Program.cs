@@ -1,10 +1,11 @@
+using MediatR;
 using TodoAPI;
-using TodoAPI.Todos.Commands;
-using TodoAPI.Todos.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddMediatR(typeof(Todo));
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
@@ -13,12 +14,6 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddSingleton<TodoRepository>();
-
-builder.Services.AddScoped<CreateTodoCommand>();
-builder.Services.AddScoped<DeleteTodoCommand>();
-builder.Services.AddScoped<EditTodoCommand>();
-builder.Services.AddScoped<GetTodoQuery>();
-builder.Services.AddScoped<GetTodosQuery>();
 
 var app = builder.Build();
 

@@ -1,16 +1,28 @@
 ﻿
-namespace TodoAPI.Todos.Queries;
-public class GetTodoQuery
-{
-    private readonly TodoRepository _repository;
+using MediatR;
 
-    public GetTodoQuery(TodoRepository repository)
+namespace TodoAPI.Todos.Queries;
+public class GetTodoQuery : IRequest<Todo>
+{
+    public int Id { get; }
+
+    public GetTodoQuery(int id)
     {
-        _repository = repository;
+        Id = id;
     }
 
-    public Todo Handle(int id)
+    public class GetTodoQueryHandler : IRequestHandler<GetTodoQuery, Todo>
     {
-        return _repository.GetTodo(id);
+        private readonly TodoRepository _repository;
+
+        public GetTodoQueryHandler(TodoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public Task<Todo> Handle(GetTodoQuery request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_repository.GetTodo(request.Id));
+        }
     }
 }

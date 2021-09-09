@@ -1,16 +1,30 @@
-﻿
-namespace TodoAPI.Todos.Commands;
-public class EditTodoCommand
-{
-    private readonly TodoRepository _repository;
+﻿using MediatR;
 
-    public EditTodoCommand(TodoRepository repository)
+namespace TodoAPI.Todos.Commands;
+public class EditTodoCommand : IRequest
+{
+    public int Id { get; }
+    public Todo Todo {  get; }
+
+    public EditTodoCommand(int id, Todo todo)
     {
-        _repository = repository;
+        Id = id;
+        Todo = todo;
     }
 
-    public void Handle(int id, Todo todo)
+    public class EditTodoCommandHandler : IRequestHandler<EditTodoCommand>
     {
-        _repository.EditTodo(id, todo);
+        private readonly TodoRepository _repository;
+
+        public EditTodoCommandHandler(TodoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public Task<Unit> Handle(EditTodoCommand request, CancellationToken cancellationToken)
+        {
+            _repository.EditTodo(request.Id, request.Todo);
+            return Unit.Task;
+        }
     }
 }

@@ -1,16 +1,29 @@
 ﻿
-namespace TodoAPI.Todos.Commands;
-public class DeleteTodoCommand
-{
-    private readonly TodoRepository _repository;
+using MediatR;
 
-    public DeleteTodoCommand(TodoRepository repository)
+namespace TodoAPI.Todos.Commands;
+public class DeleteTodoCommand : IRequest
+{
+    public int Id { get; }
+
+    public DeleteTodoCommand(int id)
     {
-        _repository = repository;
+        Id = id;
     }
 
-    public void Handle(int id)
+    public class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand>
     {
-        _repository.DeleteTodo(id);
+        private readonly TodoRepository _repository;
+
+        public DeleteTodoCommandHandler(TodoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public Task<Unit> Handle(DeleteTodoCommand request, CancellationToken cancellationToken)
+        {
+            _repository.DeleteTodo(request.Id);
+            return Unit.Task;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using TodoAPI.Todos.Commands;
 using TodoAPI.Todos.Queries;
 
@@ -7,29 +8,29 @@ namespace TodoAPI.Controllers;
 [ApiController]
 public class TodosController : ControllerBase
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IMediator _mediator;
 
-    public TodosController(IServiceProvider serviceProvider)
+    public TodosController(IMediator mediator)
     {
-        _serviceProvider = serviceProvider;
+        _mediator = mediator;
     }
 
     [HttpGet("{id}", Name = nameof(GetTodo))]
     public async Task<IActionResult> GetTodo(int id)
     {
-        return _serviceProvider.GetRequiredService<GetTodoQuery>().Handle(id) is Todo todo ? Ok(todo) : NotFound();
+        return await _mediator.Send(new GetTodoQuery(id)) is Todo todo ? Ok(todo) : NotFound();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetTodos()
     {
-        return Ok(_serviceProvider.GetRequiredService<GetTodosQuery>().Handle());
+        return Ok(await _mediator.Send(new GetTodosQuery()));
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateTodo(Todo todo)
     {
-        var newTodo = _serviceProvider.GetRequiredService<CreateTodoCommand>().Handle(todo);
+        var newTodo = await _mediator.Send(new CreateTodoCommand(todo));
 
         return CreatedAtRoute(nameof(GetTodo), new { id = newTodo.Id }, newTodo);
     }
@@ -37,14 +38,14 @@ public class TodosController : ControllerBase
     [HttpPost("{id}")]
     public async Task<IActionResult> EditTodo(int id, Todo todo)
     {
-        _serviceProvider.GetRequiredService<EditTodoCommand>().Handle(id, todo);
+        await _mediator.Send(new EditTodoCommand(id, todo));
         return Ok();
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTodo(int id)
     {
-        _serviceProvider.GetRequiredService<DeleteTodoCommand>().Handle(id);
+        await _mediator.Send(new DeleteTodoCommand(id));
         return Ok();
     }
 }

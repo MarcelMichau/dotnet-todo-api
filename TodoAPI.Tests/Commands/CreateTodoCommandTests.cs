@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using TodoAPI.Todos.Commands;
 using Xunit;
+using static TodoAPI.Todos.Commands.CreateTodoCommand;
 
 namespace TodoAPI.Tests
 {
@@ -10,14 +10,14 @@ namespace TodoAPI.Tests
         public async Task ShouldBeAbleToCreateTodo()
         {
             var repository = new TodoRepository();
-            var handler = new CreateTodoCommand(repository);
+            var handler = new CreateTodoCommandHandler(repository);
 
             var todo = new Todo
             {
                 Text = "Write a Test"
             };
 
-            var newTodo = handler.Handle(todo);
+            var newTodo = await handler.Handle(new Todos.Commands.CreateTodoCommand(todo), CancellationToken.None);
 
             newTodo.Text.Should().BeEquivalentTo(todo.Text);
         }

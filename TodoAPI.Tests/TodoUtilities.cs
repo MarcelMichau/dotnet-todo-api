@@ -1,16 +1,17 @@
 using TodoAPI.Todos.Commands;
+using static TodoAPI.Todos.Commands.CreateTodoCommand;
 
 namespace TodoAPI.Tests;
 public static class TodoUtilities
 {
-    public static int CreateDummyTodo(CreateTodoCommand handler)
+    public static async Task<int> CreateDummyTodo(CreateTodoCommandHandler handler)
     {
         var todo = new Todo
         {
             Text = "Write another Test"
         };
 
-        var newTodo = handler.Handle(todo);
+        var newTodo = await handler.Handle(new CreateTodoCommand(todo), CancellationToken.None);
 
         return newTodo.Id;
     }

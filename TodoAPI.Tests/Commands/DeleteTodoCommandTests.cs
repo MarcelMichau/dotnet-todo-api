@@ -2,6 +2,9 @@
 using TodoAPI.Todos.Commands;
 using TodoAPI.Todos.Queries;
 using Xunit;
+using static TodoAPI.Todos.Commands.CreateTodoCommand;
+using static TodoAPI.Todos.Commands.DeleteTodoCommand;
+using static TodoAPI.Todos.Queries.GetTodosQuery;
 
 namespace TodoAPI.Tests
 {
@@ -11,15 +14,15 @@ namespace TodoAPI.Tests
         public async Task ShouldBeAbleToDeleteTodo()
         {
             var repository = new TodoRepository();
-            var createHandler = new CreateTodoCommand(repository);
+            var createHandler = new CreateTodoCommandHandler(repository);
 
-            var id = TodoUtilities.CreateDummyTodo(createHandler);
+            var id = await TodoUtilities.CreateDummyTodo(createHandler);
 
-            var deleteHandler = new DeleteTodoCommand(repository);
-            deleteHandler.Handle(id);
+            var deleteHandler = new DeleteTodoCommandHandler(repository);
+            await deleteHandler.Handle(new DeleteTodoCommand(id), CancellationToken.None);
 
-            var getAllHandler = new GetTodosQuery(repository);
-            var todos = getAllHandler.Handle();
+            var getAllHandler = new GetTodosQueryHandler(repository);
+            var todos = await getAllHandler.Handle(new GetTodosQuery(), CancellationToken.None);
 
             todos.Count.Should().Be(0);
         }

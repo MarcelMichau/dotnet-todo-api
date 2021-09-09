@@ -1,15 +1,27 @@
-﻿namespace TodoAPI.Todos.Commands;
-public class CreateTodoCommand
-{
-    private readonly TodoRepository _repository;
+﻿using MediatR;
 
-    public CreateTodoCommand(TodoRepository repository)
+namespace TodoAPI.Todos.Commands;
+public class CreateTodoCommand : IRequest<Todo>
+{
+    public Todo Todo { get; }
+
+    public CreateTodoCommand(Todo todo)
     {
-        _repository = repository;
+        Todo = todo;
     }
 
-    public Todo Handle(Todo todo)
+    public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Todo>
     {
-        return _repository.AddTodo(todo);
+        private readonly TodoRepository _repository;
+
+        public CreateTodoCommandHandler(TodoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public Task<Todo> Handle(CreateTodoCommand request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_repository.AddTodo(request.Todo));
+        }
     }
 }

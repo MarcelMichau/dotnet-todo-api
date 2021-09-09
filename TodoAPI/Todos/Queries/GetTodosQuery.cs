@@ -1,16 +1,21 @@
 ﻿
+using MediatR;
+
 namespace TodoAPI.Todos.Queries;
-public class GetTodosQuery
+public class GetTodosQuery : IRequest<List<Todo>>
 {
-    private readonly TodoRepository _repository;
-
-    public GetTodosQuery(TodoRepository repository)
+    public class GetTodosQueryHandler : IRequestHandler<GetTodosQuery, List<Todo>>
     {
-        _repository = repository;
-    }
+        private readonly TodoRepository _repository;
 
-    public List<Todo> Handle()
-    {
-        return _repository.GetTodos();
+        public GetTodosQueryHandler(TodoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public Task<List<Todo>> Handle(GetTodosQuery request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_repository.GetTodos());
+        }
     }
 }
