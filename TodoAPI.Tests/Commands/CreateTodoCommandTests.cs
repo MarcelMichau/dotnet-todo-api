@@ -2,21 +2,20 @@
 using Xunit;
 using static TodoAPI.Todos.Commands.CreateTodoCommand;
 
-namespace TodoAPI.Tests
+namespace TodoAPI.Tests.Commands;
+
+public class CreateTodoCommandTests
 {
-    public class CreateTodoCommandTests
+    [Fact]
+    public async Task ShouldBeAbleToCreateTodo()
     {
-        [Fact]
-        public async Task ShouldBeAbleToCreateTodo()
-        {
-            var repository = new TodoRepository();
-            var handler = new CreateTodoCommandHandler(repository);
+        var repository = new TodoRepository();
+        var handler = new CreateTodoCommandHandler(repository);
 
-            var todoText = "Write a Test";
+        var todoText = "Write a Test";
 
-            var newTodo = await handler.Handle(new Todos.Commands.CreateTodoCommand(todoText), CancellationToken.None);
+        var newTodo = await handler.Handle(new Todos.Commands.CreateTodoCommand(todoText), CancellationToken.None);
 
-            newTodo.Text.Should().BeEquivalentTo(todoText);
-        }
+        newTodo.Text.Should().BeEquivalentTo(todoText);
     }
 }

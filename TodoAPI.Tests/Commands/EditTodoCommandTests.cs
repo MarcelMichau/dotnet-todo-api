@@ -6,56 +6,55 @@ using static TodoAPI.Todos.Commands.CreateTodoCommand;
 using static TodoAPI.Todos.Commands.EditTodoCommand;
 using static TodoAPI.Todos.Queries.GetTodoQuery;
 
-namespace TodoAPI.Tests
+namespace TodoAPI.Tests.Commands;
+
+public class EditTodoCommandTests
 {
-    public class EditTodoCommandTests
+    [Fact]
+    public async Task ShouldBeAbleToCompleteTodo()
     {
-        [Fact]
-        public async Task ShouldBeAbleToCompleteTodo()
+        var repository = new TodoRepository();
+        var createHandler = new CreateTodoCommandHandler(repository);
+
+        var id = await TodoUtilities.CreateDummyTodo(createHandler);
+
+        var completedTodo = new EditableTodo
         {
-            var repository = new TodoRepository();
-            var createHandler = new CreateTodoCommandHandler(repository);
+            IsCompleted = true
+        };
 
-            var id = await TodoUtilities.CreateDummyTodo(createHandler);
+        var editHandler = new EditTodoCommandHandler(repository);
+        await editHandler.Handle(new EditTodoCommand(id, completedTodo), CancellationToken.None);
 
-            var completedTodo = new EditableTodo
-            {
-                IsCompleted = true
-            };
+        var getHandler = new GetTodoQueryHandler(repository);
 
-            var editHandler = new EditTodoCommandHandler(repository);
-            await editHandler.Handle(new EditTodoCommand(id, completedTodo), CancellationToken.None);
+        var editedTodo = await getHandler.Handle(new GetTodoQuery(id), CancellationToken.None);
 
-            var getHandler = new GetTodoQueryHandler(repository);
+        editedTodo.IsCompleted.Should().BeTrue();
+    }
 
-            var editedTodo = await getHandler.Handle(new GetTodoQuery(id), CancellationToken.None);
+    [Fact]
+    public async Task ShouldBeAbleToEditTodoText()
+    {
+        var repository = new TodoRepository();
+        var createHandler = new CreateTodoCommandHandler(repository);
 
-            editedTodo.IsCompleted.Should().BeTrue();
-        }
+        var id = await TodoUtilities.CreateDummyTodo(createHandler);
 
-        [Fact]
-        public async Task ShouldBeAbleToEditTodoText()
+        var updatedText = "This is now updated";
+
+        var completedTodo = new EditableTodo
         {
-            var repository = new TodoRepository();
-            var createHandler = new CreateTodoCommandHandler(repository);
+            Text = updatedText
+        };
 
-            var id = await TodoUtilities.CreateDummyTodo(createHandler);
+        var editHandler = new EditTodoCommandHandler(repository);
+        await editHandler.Handle(new EditTodoCommand(id, completedTodo), CancellationToken.None);
 
-            var updatedText = "This is now updated";
+        var getHandler = new GetTodoQueryHandler(repository);
 
-            var completedTodo = new EditableTodo
-            {
-                Text = updatedText
-            };
+        var editedTodo = await getHandler.Handle(new GetTodoQuery(id), CancellationToken.None);
 
-            var editHandler = new EditTodoCommandHandler(repository);
-            await editHandler.Handle(new EditTodoCommand(id, completedTodo), CancellationToken.None);
-
-            var getHandler = new GetTodoQueryHandler(repository);
-
-            var editedTodo = await getHandler.Handle(new GetTodoQuery(id), CancellationToken.None);
-
-            editedTodo.Text.Should().Be(updatedText);
-        }
+        editedTodo.Text.Should().Be(updatedText);
     }
 }
